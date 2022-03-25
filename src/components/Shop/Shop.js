@@ -35,12 +35,24 @@ const Shop = () => {
     //  console.log('loacal storage finish');
     },[products])
 
-    const handleAddToCart = (product) =>{
+    const handleAddToCart = (selectedproduct) =>{
         // console.log(product);
+        let newCart=[];
+        const exists = cart.find(product=>product.id===selectedproduct.id);
+        if(!exists){
+            selectedproduct.quantity=1;
+            newCart=[...cart,selectedproduct];
+        }
         // do not do this: cart.push(product);
-        const newCart = [...cart, product];
+        // const newCart = [...cart, selectedproduct];
+        else{
+            const rest =cart.filter(product=>product.id!==selectedproduct.id)
+            exists.quantity=exists.quantity+1;
+            newCart=[...rest,exists];
+            
+        }
         setCart(newCart);
-        addToDb(product.id);
+        addToDb(selectedproduct.id);
     }
 
     return (
