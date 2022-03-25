@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { addToDb, getStoredCart } from '../../utilities/fakedb';
 import Cart from '../Cart/Cart';
 import Product from '../Product/Product';
 import './Shop.css';
@@ -8,16 +9,38 @@ const Shop = () => {
     const [cart, setCart] = useState([]);
 
     useEffect( () =>{
+        // console.log('products load before fetch')
         fetch('products.json')
         .then(res=> res.json())
         .then(data => setProducts(data))
+        // console.log("products lodedeed");
     }, []);
+
+    useEffect(()=>{
+        // console.log('local storage first time');
+    const storedCart=getStoredCart();
+    const saveCart=[];
+    // console.log(storedCart);
+     for(const id in storedCart){
+        //  console.log(id);
+        const addedProduct=products.find(product=>product.id==id)
+        if(addedProduct){
+            const quantity=storedCart[id];
+            addedProduct.quantity=quantity;
+            // console.log(addedProduct);
+            saveCart.push(addedProduct);
+        }
+     }
+     setCart(saveCart);
+    //  console.log('loacal storage finish');
+    },[products])
 
     const handleAddToCart = (product) =>{
         // console.log(product);
         // do not do this: cart.push(product);
         const newCart = [...cart, product];
         setCart(newCart);
+        addToDb(product.id);
     }
 
     return (
